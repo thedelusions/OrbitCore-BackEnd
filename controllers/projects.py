@@ -14,7 +14,7 @@ def create_project(project: ProjectSchema, current_user: UserModel = Depends(get
     new_project = ProjectModel(
         title=project.title,
         description=project.description,
-        ownerId=project.ownerId,
+        ownerId=current_user.id,
         status=project.status,
         tags=project.tags
     )

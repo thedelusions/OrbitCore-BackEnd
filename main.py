@@ -1,12 +1,15 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from controllers.users import router as UserRouter
 from controllers.projects import router as ProjectRouter
+from controllers.team import router as TeamRouter
 from database import engine
 from models.base import Base
 from models.user import UserModel
 from models.project import ProjectModel
 from models.vote import VoteModel
 from models.team import TeamModel
+from models.comment import CommentModel
 
 
 # Create all tables
