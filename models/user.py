@@ -28,8 +28,7 @@ class UserModel(Base):
         self.password_hash = pwd_context.hash(password)
 
     def verify_password(self, password: str) -> bool:
-        return pwd_context.verify(password, self.
-        password_hash)
+        return pwd_context.verify(password, self.password_hash)
 
     def generate_token(self):
         payload = {

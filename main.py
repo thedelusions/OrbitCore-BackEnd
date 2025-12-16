@@ -4,6 +4,10 @@ from controllers.users import router as UserRouter
 from controllers.projects import router as ProjectRouter
 from database import engine
 from models.base import Base
+from models.user import UserModel
+from models.project import ProjectModel
+from models.vote import VoteModel
+from models.team import TeamModel
 
 
 # Create all tables
@@ -11,16 +15,14 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-origins = [
-    "http://127.0.0.1:5173", 
-]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 app.include_router(UserRouter, prefix="/api")
