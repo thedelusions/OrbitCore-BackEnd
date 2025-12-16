@@ -8,7 +8,7 @@ class TeamSchema(BaseModel):
     repo_link: str = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TeamResponseSchema(BaseModel):
     id: int
@@ -19,4 +19,4 @@ class TeamResponseSchema(BaseModel):
     joined_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

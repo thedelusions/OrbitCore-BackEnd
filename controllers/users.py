@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from models.user import UserModel
 from serializers.user import UserSchema, UserLogin, UserToken, UserResponseSchema, UserUpdateSchema
 from database import get_db
-
+from dependencies.get_current_user import get_current_user
 router = APIRouter()
 
 @router.post("/register", response_model=UserResponseSchema)

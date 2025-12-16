@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from models.project import ProjectModel
+from models.user import UserModel
 from models.vote import VoteModel
 from serializers.project import ProjectSchema, ProjectResponseSchema, ProjectUpdateSchema
 from database import get_db

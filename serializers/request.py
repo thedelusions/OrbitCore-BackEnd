@@ -7,14 +7,14 @@ class RequestCreateSchema(BaseModel):
     message: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RequestUpdateSchema(BaseModel):
     status: str  # "pending", "accepted", or "rejected"
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RequestResponseSchema(BaseModel):
@@ -27,7 +27,7 @@ class RequestResponseSchema(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RequestWithDetailsSchema(BaseModel):
@@ -42,4 +42,4 @@ class RequestWithDetailsSchema(BaseModel):
     project: dict 
 
     class Config:
-        orm_mode = True
+        from_attributes = True

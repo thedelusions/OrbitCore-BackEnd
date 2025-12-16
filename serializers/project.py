@@ -11,7 +11,7 @@ class ProjectSchema(BaseModel):
     tags: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ProjectResponseSchema(BaseModel):
@@ -27,7 +27,7 @@ class ProjectResponseSchema(BaseModel):
     updatedAt: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ProjectUpdateSchema(BaseModel):
@@ -37,4 +37,4 @@ class ProjectUpdateSchema(BaseModel):
     tags: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
