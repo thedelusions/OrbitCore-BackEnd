@@ -9,7 +9,7 @@ from database import get_db
 from dependencies.get_current_user import get_current_user
 router = APIRouter()
 
-@router.post("/", response_model=ProjectResponseSchema)
+@router.post("/projects/", response_model=ProjectResponseSchema)
 def create_project(project: ProjectSchema, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
     new_project = ProjectModel(
         title=project.title,
@@ -25,12 +25,12 @@ def create_project(project: ProjectSchema, current_user: UserModel = Depends(get
     
     return new_project
 
-@router.get("/", response_model=List[ProjectResponseSchema])
+@router.get("/projects/", response_model=List[ProjectResponseSchema])
 def get_all_projects(db: Session = Depends(get_db)):
     projects = db.query(ProjectModel).all()
     return projects
 
-@router.get("/{project_id}", response_model=ProjectResponseSchema)
+@router.get("/projects/{project_id}", response_model=ProjectResponseSchema)
 def get_project(project_id: int, db: Session = Depends(get_db)):
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     
@@ -39,7 +39,7 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
     
     return project
 
-@router.put("/{project_id}", response_model=ProjectResponseSchema)
+@router.put("/projects/{project_id}", response_model=ProjectResponseSchema)
 def update_project(project_id: int, project_update: ProjectUpdateSchema, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     
@@ -60,7 +60,7 @@ def update_project(project_id: int, project_update: ProjectUpdateSchema, current
     
     return project
 
-@router.delete("/{project_id}")
+@router.delete("/projects/{project_id}")
 def delete_project(project_id: int, db: Session = Depends(get_db)):
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     
@@ -72,12 +72,12 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
     
     return {"message": "Project deleted successfully"}
 
-@router.get("/user/{user_id}", response_model=List[ProjectResponseSchema])
+@router.get("/projects/user/{user_id}", response_model=List[ProjectResponseSchema])
 def get_user_projects(user_id: int, db: Session = Depends(get_db)):
     projects = db.query(ProjectModel).filter(ProjectModel.ownerId == user_id).all()
     return projects
 
-@router.post("/{project_id}/upvote/{user_id}", response_model=ProjectResponseSchema)
+@router.post("/projects/{project_id}/upvote/{user_id}", response_model=ProjectResponseSchema)
 def upvote_project(project_id: int, user_id: int, db: Session = Depends(get_db)):
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     
@@ -106,7 +106,7 @@ def upvote_project(project_id: int, user_id: int, db: Session = Depends(get_db))
     
     return project
 
-@router.post("/{project_id}/downvote/{user_id}", response_model=ProjectResponseSchema)
+@router.post("/projects/{project_id}/downvote/{user_id}", response_model=ProjectResponseSchema)
 def downvote_project(project_id: int, user_id: int, db: Session = Depends(get_db)):
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     

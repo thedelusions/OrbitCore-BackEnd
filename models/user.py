@@ -34,7 +34,7 @@ class UserModel(Base):
         payload = {
             "exp": datetime.now(timezone.utc) + timedelta(days=1),
             "iat": datetime.now(timezone.utc),
-            "sub": self.id
+            "sub": str(self.id)  # Convert to string for JWT
         }
 
         token = jwt.encode(payload, secret, algorithm="HS256")

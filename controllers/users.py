@@ -48,7 +48,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     # Return token and a success message
     return {"token": token, "message": "Login successful"}
 
-@router.get("/{user_id}", response_model=UserResponseSchema)
+@router.get("/users/{user_id}", response_model=UserResponseSchema)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(UserModel).filter(UserModel.id == user_id).first()
     if not user:
