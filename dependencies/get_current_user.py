@@ -18,7 +18,7 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(http_be
         payload = jwt.decode(token.credentials, secret, algorithms=["HS256"])
 
         # Query the database to find the user with the ID from the token's payload
-        user = db.query(UserModel).filter(UserModel.id == payload.get("sub")).first()
+        user = db.query(UserModel).filter(UserModel.id == int(payload.get("sub"))).first()
 
         # If no user is found, raise an HTTP 401 Unauthorized error
         if not user:
