@@ -9,7 +9,7 @@ class UserSchema(BaseModel):
     github_profile: str  # GitHub profile link
 
     class Config:
-        orm_mode = True  # Enables compatibility with ORM models
+        from_attributes = True  # Enables compatibility with ORM models
 
 # Schema for returning user data (without exposing the password)
 class UserResponseSchema(BaseModel):
@@ -20,7 +20,7 @@ class UserResponseSchema(BaseModel):
     github_profile: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserLogin(BaseModel):
     username: str  # Username provided by the user during login
@@ -32,7 +32,7 @@ class UserToken(BaseModel):
     message: str  # Success message
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserUpdateSchema(BaseModel):
     role: str = None
@@ -40,4 +40,4 @@ class UserUpdateSchema(BaseModel):
     github_profile: str = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

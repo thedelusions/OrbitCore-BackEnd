@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from controllers.users import router as UserRouter
 from controllers.projects import router as ProjectRouter
 from database import engine
@@ -27,7 +26,8 @@ app.add_middleware(
 
 app.include_router(UserRouter, prefix="/api")
 app.include_router(ProjectRouter, prefix="/api")
+app.include_router(TeamRouter, prefix="/api")
 
 @app.get('/')
 def home():
-    return {'message': 'Hello World!'}
+    return 'Hello World!'
