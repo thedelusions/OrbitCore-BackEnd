@@ -63,6 +63,8 @@ class ProjectModel(Base):
     ownerId = Column(Integer, ForeignKey('users.id'), nullable=False)
     status = Column(Enum(ProjectStatus), nullable=False, default=ProjectStatus.OPEN)
     tags = Column(String, nullable=False)
+    upvotes = Column(Integer, default=0, nullable=False)
+    downvotes = Column(Integer, default=0, nullable=False)
     
     createdAt = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updatedAt = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False) 

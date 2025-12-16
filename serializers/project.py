@@ -21,6 +21,8 @@ class ProjectResponseSchema(BaseModel):
     ownerId: int
     status: str
     tags: Optional[str] = None
+    upvotes: int
+    downvotes: int
     createdAt: datetime
     updatedAt: datetime
 
