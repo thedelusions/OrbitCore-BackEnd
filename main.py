@@ -9,6 +9,7 @@ from models.user import UserModel
 from models.project import ProjectModel
 from models.vote import VoteModel
 from models.team import TeamModel
+from models.comment import CommentModel
 
 
 # Create all tables
