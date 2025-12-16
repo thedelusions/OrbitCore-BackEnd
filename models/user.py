@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 from .base import Base
 from passlib.context import CryptContext
-from datetime import datetime, timezone, timedelta  # New import for timestamps
+from datetime import datetime, timezone, timedelta  
 import jwt
 
 # Creating a password hashing context using bcrypt
@@ -19,6 +20,8 @@ class UserModel(Base):
     role = Column(String, nullable=True)
     bio = Column(String, nullable=True)
     github_profile = Column(String, nullable=True)
+
+    teams = relationship("TeamModel", back_populates="user")
 
     # Method to hash and store the password
     def set_password(self, password: str):
