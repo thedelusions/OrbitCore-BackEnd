@@ -13,3 +13,4 @@ class TeamModel(BaseModel):
     joined_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("UserModel", back_populates="teams")
+    
