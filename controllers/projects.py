@@ -61,11 +61,14 @@ def update_project(project_id: int, project_update: ProjectUpdateSchema, current
     return project
 
 @router.delete("/projects/{project_id}")
-def delete_project(project_id: int, db: Session = Depends(get_db)):
+def delete_project(project_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+    
+    if project.ownerId != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this project")
     
     db.delete(project)
     db.commit()
