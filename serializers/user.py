@@ -33,3 +33,11 @@ class UserToken(BaseModel):
 
     class Config:
         orm_mode = True
+
+class UserUpdateSchema(BaseModel):
+    role: str = None
+    bio: str = None
+    github_profile: str = None
+
+    class Config:
+        orm_mode = True

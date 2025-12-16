@@ -5,11 +5,11 @@ from models.project import ProjectModel
 from models.vote import VoteModel
 from serializers.project import ProjectSchema, ProjectResponseSchema, ProjectUpdateSchema
 from database import get_db
-
+from dependencies.get_current_user import get_current_user
 router = APIRouter()
 
 @router.post("/", response_model=ProjectResponseSchema)
-def create_project(project: ProjectSchema, db: Session = Depends(get_db)):
+def create_project(project: ProjectSchema, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
     new_project = ProjectModel(
         title=project.title,
         description=project.description,
@@ -39,7 +39,7 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
     return project
 
 @router.put("/{project_id}", response_model=ProjectResponseSchema)
-def update_project(project_id: int, project_update: ProjectUpdateSchema, db: Session = Depends(get_db)):
+def update_project(project_id: int, project_update: ProjectUpdateSchema, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     
     if not project:

@@ -1,30 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from models.team import TeamModel
 from models.user import UserModel
 from models.project import ProjectModel
 from serializers.team import TeamSchema, TeamResponseSchema
 from database import get_db
-import jwt
-from config.environment import secret
+from dependencies.get_current_user import get_current_user
+
 
 router = APIRouter()
 
-def get_current_user(authorization: str = Header(None), db: Session = Depends(get_db)):
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-    try:
-        scheme, token = authorization.split()
-        if scheme.lower() != "bearer":
-            raise HTTPException(status_code=401, detail="Invalid scheme")
-        payload = jwt.decode(token, secret, algorithms=["HS256"])
-        user_id = payload["sub"]
-        user = db.query(UserModel).filter(UserModel.id == user_id).first()
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        return user
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.get("/projects/{project_id}/team", response_model=list[TeamResponseSchema])
 def get_team_members(project_id: int, db: Session = Depends(get_db)):
