@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from controllers.users import router as UserRouter
 from controllers.projects import router as ProjectRouter
 from controllers.team import router as TeamRouter
+from controllers.requests import router as RequestRouter
 from database import engine
 from models.base import Base
 from models.user import UserModel
@@ -30,6 +31,7 @@ app.add_middleware(
 app.include_router(UserRouter, prefix="/api")
 app.include_router(ProjectRouter, prefix="/api")
 app.include_router(TeamRouter, prefix="/api")
+app.include_router(RequestRouter, prefix="/api")
 
 @app.get('/')
 def home():
