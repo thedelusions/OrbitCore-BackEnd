@@ -5,19 +5,21 @@ from models.request import RequestModel, RequestStatus
 from models.project import ProjectModel
 from serializers.request import RequestCreateSchema, RequestUpdateSchema, RequestResponseSchema, RequestWithDetailsSchema
 from database import get_db
+from dependencies.get_current_user import get_current_user
+from models.user import UserModel
 
 router = APIRouter()
 
 
 @router.post("/projects/{project_id}/requests", response_model=RequestResponseSchema)
-def request_to_join_project(project_id: int, request: RequestCreateSchema, db: Session = Depends(get_db)):
+def request_to_join_project(project_id: int, request: RequestCreateSchema, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
 
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
     existing_request = db.query(RequestModel).filter(
-        (RequestModel.project_id == project_id) & (RequestModel.user_id == request.user_id)
+        (RequestModel.project_id == project_id) & (RequestModel.user_id == current_user.id)
     ).first()
     
     if existing_request:
@@ -25,7 +27,7 @@ def request_to_join_project(project_id: int, request: RequestCreateSchema, db: S
     
     new_request = RequestModel(
         project_id=project_id,
-        user_id=request.user_id,
+        user_id=current_user.id,
         message=request.message,
         status=RequestStatus.PENDING
     )
@@ -49,12 +51,17 @@ def get_project_requests(project_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/requests/{request_id}", response_model=RequestResponseSchema)
-def accept_or_reject_request(request_id: int, request_update: RequestUpdateSchema, db: Session = Depends(get_db)):
+def accept_or_reject_request(request_id: int, request_update: RequestUpdateSchema, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
 
     join_request = db.query(RequestModel).filter(RequestModel.id == request_id).first()
     
     if not join_request:
         raise HTTPException(status_code=404, detail="Request not found")
+    
+    # Check if current user is the project owner
+    project = db.query(ProjectModel).filter(ProjectModel.id == join_request.project_id).first()
+    if not project or project.ownerId != current_user.id:
+        raise HTTPException(status_code=403, detail="Only the project owner can accept or reject requests")
     
     valid_statuses = [RequestStatus.ACCEPTED.value, RequestStatus.REJECTED.value]
     if request_update.status not in valid_statuses:
@@ -69,7 +76,7 @@ def accept_or_reject_request(request_id: int, request_update: RequestUpdateSchem
 
 
 @router.get("/users/me/requests", response_model=List[RequestWithDetailsSchema])
-def get_my_join_requests(user_id: int, db: Session = Depends(get_db)):
+def get_my_join_requests(current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
 
-    requests = db.query(RequestModel).filter(RequestModel.user_id == user_id).all()
+    requests = db.query(RequestModel).filter(RequestModel.user_id == current_user.id).all()
     return requests
