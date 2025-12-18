@@ -1,13 +1,14 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from models.project import ProjectStatus
 
 
 class ProjectSchema(BaseModel):
     title: str
     description: str
     ownerId: int
-    status: Optional[str] = "open"
+    status: Optional[ProjectStatus] = ProjectStatus.OPEN
     tags: Optional[str] = None
     repo_link: Optional[str] = None
 
@@ -20,7 +21,7 @@ class ProjectResponseSchema(BaseModel):
     title: str
     description: str
     ownerId: int
-    status: str
+    status: ProjectStatus
     tags: Optional[str] = None
     repo_link: Optional[str] = None
     upvotes: int
@@ -35,7 +36,7 @@ class ProjectResponseSchema(BaseModel):
 class ProjectUpdateSchema(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[ProjectStatus] = None
     tags: Optional[str] = None
     repo_link: Optional[str] = None
 
