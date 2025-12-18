@@ -48,6 +48,9 @@ def update_project(project_id: int, project_update: ProjectUpdateSchema, current
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
+    if project.ownerId != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to edit this project")
+    
     if project_update.title is not None:
         project.title = project_update.title
     if project_update.description is not None:
@@ -56,6 +59,8 @@ def update_project(project_id: int, project_update: ProjectUpdateSchema, current
         project.status = project_update.status
     if project_update.tags is not None:
         project.tags = project_update.tags
+    if project_update.repo_link is not None:
+        project.repo_link = project_update.repo_link
     
     db.commit()
     db.refresh(project)
