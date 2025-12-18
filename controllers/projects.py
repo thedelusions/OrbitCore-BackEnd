@@ -4,6 +4,7 @@ from typing import List
 from models.project import ProjectModel
 from models.user import UserModel
 from models.vote import VoteModel
+from models.request import RequestModel
 from serializers.project import ProjectSchema, ProjectResponseSchema, ProjectUpdateSchema
 from database import get_db
 from dependencies.get_current_user import get_current_user
@@ -16,7 +17,8 @@ def create_project(project: ProjectSchema, current_user: UserModel = Depends(get
         description=project.description,
         ownerId=current_user.id,
         status=project.status,
-        tags=project.tags
+        tags=project.tags,
+        repo_link=project.repo_link
     )
     
     db.add(new_project)
@@ -69,6 +71,9 @@ def delete_project(project_id: int, current_user: UserModel = Depends(get_curren
     
     if project.ownerId != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to delete this project")
+    
+    db.query(VoteModel).filter(VoteModel.projectId == project_id).delete()
+    db.query(RequestModel).filter(RequestModel.project_id == project_id).delete()
     
     db.delete(project)
     db.commit()
