@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
-
+from serializers.user import UserResponseSchema
+from serializers.project import ProjectResponseSchema
 
 class RequestCreateSchema(BaseModel):
     message: Optional[str] = None
@@ -38,8 +39,8 @@ class RequestWithDetailsSchema(BaseModel):
     message: Optional[str] = None
     created_at: datetime
     updated_at: datetime
-    user: dict  
-    project: dict 
+    user: UserResponseSchema
+    project: ProjectResponseSchema
 
     class Config:
         from_attributes = True
