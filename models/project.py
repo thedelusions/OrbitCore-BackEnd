@@ -63,6 +63,7 @@ class ProjectModel(Base):
     ownerId = Column(Integer, ForeignKey('users.id'), nullable=False)
     status = Column(Enum(ProjectStatus), nullable=False, default=ProjectStatus.OPEN)
     tags = Column(String, nullable=False)
+    repo_link = Column(String, nullable=True)
     upvotes = Column(Integer, default=0, nullable=False)
     downvotes = Column(Integer, default=0, nullable=False)
     

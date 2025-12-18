@@ -9,6 +9,7 @@ class ProjectSchema(BaseModel):
     ownerId: int
     status: Optional[str] = "open"
     tags: Optional[str] = None
+    repo_link: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -21,6 +22,7 @@ class ProjectResponseSchema(BaseModel):
     ownerId: int
     status: str
     tags: Optional[str] = None
+    repo_link: Optional[str] = None
     upvotes: int
     downvotes: int
     createdAt: datetime
@@ -35,6 +37,7 @@ class ProjectUpdateSchema(BaseModel):
     description: Optional[str] = None
     status: Optional[str] = None
     tags: Optional[str] = None
+    repo_link: Optional[str] = None
 
     class Config:
         from_attributes = True
