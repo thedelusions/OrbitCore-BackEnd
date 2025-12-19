@@ -5,6 +5,7 @@ from models.project import ProjectModel
 from models.user import UserModel
 from models.vote import VoteModel
 from models.request import RequestModel
+from models.team import TeamModel
 from serializers.project import ProjectSchema, ProjectResponseSchema, ProjectUpdateSchema
 from database import get_db
 from dependencies.get_current_user import get_current_user
@@ -24,7 +25,14 @@ def create_project(project: ProjectSchema, current_user: UserModel = Depends(get
     db.add(new_project)
     db.commit()
     db.refresh(new_project)
-    
+    owner_team = TeamModel(
+        project_id=new_project.id,
+        user_id=current_user.id,
+        role="Owner"
+    )
+    db.add(owner_team)
+    db.commit()
+
     return new_project
 
 @router.get("/projects/", response_model=List[ProjectResponseSchema])

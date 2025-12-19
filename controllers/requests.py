@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from models.request import RequestModel, RequestStatus
 from models.project import ProjectModel
+from models.team import TeamModel
 from serializers.request import RequestCreateSchema, RequestUpdateSchema, RequestResponseSchema, RequestWithDetailsSchema
 from database import get_db
 from dependencies.get_current_user import get_current_user
@@ -58,22 +59,34 @@ def accept_or_reject_request(request_id: int, request_update: RequestUpdateSchem
     if not join_request:
         raise HTTPException(status_code=404, detail="Request not found")
     
-    # Check if current user is the project owner
+    
     project = db.query(ProjectModel).filter(ProjectModel.id == join_request.project_id).first()
-    if not project or project.ownerId != current_user.id:
-        raise HTTPException(status_code=403, detail="Only the project owner can accept or reject requests")
-    
-    valid_statuses = [RequestStatus.ACCEPTED.value, RequestStatus.REJECTED.value]
-    if request_update.status not in valid_statuses:
-        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of {valid_statuses}")
-    
-    join_request.status = request_update.status
-    
+    if project.ownerId != current_user.id:
+        raise HTTPException(status_code=403, detail="Only project owner can manage requests")
+
+    if join_request.status != RequestStatus.PENDING:
+        raise HTTPException(status_code=400, detail="Request already handled")
+
+    if request_update.status == RequestStatus.ACCEPTED.value:
+        join_request.status = RequestStatus.ACCEPTED
+
+       
+        team_member = TeamModel(
+            project_id=join_request.project_id,
+            user_id=join_request.user_id,
+            role="Member"
+        )
+        db.add(team_member)
+
+    elif request_update.status == RequestStatus.REJECTED.value:
+        join_request.status = RequestStatus.REJECTED
+
+    else:
+        raise HTTPException(status_code=400, detail="Invalid status")
+
     db.commit()
     db.refresh(join_request)
-    
     return join_request
-
 
 @router.get("/users/me/requests", response_model=List[RequestWithDetailsSchema])
 def get_my_join_requests(current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
