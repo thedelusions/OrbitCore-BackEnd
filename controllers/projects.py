@@ -155,3 +155,29 @@ def downvote_project(project_id: int, user_id: int, db: Session = Depends(get_db
     db.refresh(project)
     
     return project
+
+@router.delete("/projects/{project_id}/vote/{user_id}", response_model=ProjectResponseSchema)
+def delete_vote(project_id: int, user_id: int, db: Session = Depends(get_db)):
+    project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
+    
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    existing_vote = db.query(VoteModel).filter(
+        VoteModel.userId == user_id,
+        VoteModel.projectId == project_id
+    ).first()
+    
+    if not existing_vote:
+        raise HTTPException(status_code=404, detail="Vote not found")
+    
+    if existing_vote.voteType == "upvote":
+        project.upvotes -= 1
+    else:
+        project.downvotes -= 1
+    
+    db.delete(existing_vote)
+    db.commit()
+    db.refresh(project)
+    
+    return project
