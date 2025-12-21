@@ -18,6 +18,7 @@ class RequestModel(BaseModel):
 
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    role = Column(String, nullable=False)
     status = Column(Enum(RequestStatus), nullable=False, default=RequestStatus.PENDING)
     message = Column(String, nullable=True)  
     createdAt = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -26,3 +27,5 @@ class RequestModel(BaseModel):
     user = relationship("UserModel")
 
     
+
+

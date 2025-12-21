@@ -1,3 +1,5 @@
+
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
@@ -28,6 +30,7 @@ def request_to_join_project(project_id: int, request: RequestCreateSchema, curre
     new_request = RequestModel(
         project_id=project_id,
         user_id=current_user.id,
+        role=request.role,
         message=request.message,
         status=RequestStatus.PENDING
     )
@@ -80,3 +83,4 @@ def get_my_join_requests(current_user: UserModel = Depends(get_current_user), db
 
     requests = db.query(RequestModel).filter(RequestModel.user_id == current_user.id).all()
     return requests
+
