@@ -1,11 +1,12 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 class TeamSchema(BaseModel):
     project_id: int
     user_id: int
     role: str
-    repo_link: str = None
+    repo_link: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -15,8 +16,8 @@ class TeamResponseSchema(BaseModel):
     project_id: int
     user_id: int
     role: str
-    repo_link: str = None
-    joined_at: datetime
+    repo_link: Optional[str] = None
+    joined_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
