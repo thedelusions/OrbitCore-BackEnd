@@ -6,6 +6,7 @@ from models.user import UserModel
 from models.vote import VoteModel
 from models.request import RequestModel
 from models.team import TeamModel
+from models.comment import CommentModel
 from serializers.project import ProjectSchema, ProjectResponseSchema, ProjectUpdateSchema
 from database import get_db
 from dependencies.get_current_user import get_current_user
@@ -84,6 +85,14 @@ def delete_project(project_id: int, current_user: UserModel = Depends(get_curren
     
     if project.ownerId != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to delete this project")
+    
+    # Delete comments associated with teams of this project
+    db.query(CommentModel).filter(CommentModel.team_id.in_(
+        db.query(TeamModel.id).filter(TeamModel.project_id == project_id)
+    )).delete(synchronize_session=False)
+    
+    # Delete teams associated with this project
+    db.query(TeamModel).filter(TeamModel.project_id == project_id).delete()
     
     db.query(VoteModel).filter(VoteModel.projectId == project_id).delete()
     db.query(RequestModel).filter(RequestModel.project_id == project_id).delete()

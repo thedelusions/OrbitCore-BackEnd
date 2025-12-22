@@ -15,6 +15,9 @@ from config.environment import secret
 router = APIRouter()
 
 def is_team_member(project_id: int, user_id: int, db: Session):
+    project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
+    if project and project.ownerId == user_id:
+        return True
     return db.query(TeamModel).filter(
         TeamModel.project_id == project_id,
         TeamModel.user_id == user_id
