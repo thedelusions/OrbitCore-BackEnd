@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from models.team import TeamModel
 from models.user import UserModel
 from models.project import ProjectModel
@@ -26,7 +26,7 @@ def is_team_member(project_id: int, user_id: int, db: Session):
 
 @router.get("/projects/{project_id}/team", response_model=list[TeamResponseSchema])
 def get_team_members(project_id: int, db: Session = Depends(get_db)):
-    team_members = db.query(TeamModel).filter(TeamModel.project_id == project_id).all()
+    team_members = db.query(TeamModel).options(joinedload(TeamModel.user)).filter(TeamModel.project_id == project_id).all()
     return team_members
 
 

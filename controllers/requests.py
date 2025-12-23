@@ -1,7 +1,7 @@
 
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List
 from models.request import RequestModel, RequestStatus
 from models.project import ProjectModel
@@ -50,7 +50,7 @@ def get_project_requests(project_id: int, db: Session = Depends(get_db)):
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
-    requests = db.query(RequestModel).filter(RequestModel.project_id == project_id).all()
+    requests = db.query(RequestModel).options(joinedload(RequestModel.user), joinedload(RequestModel.project)).filter(RequestModel.project_id == project_id).all()
     return requests
 
 

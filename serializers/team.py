@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
+from serializers.user import UserResponseSchema
 
 class TeamSchema(BaseModel):
     project_id: int
@@ -18,6 +19,7 @@ class TeamResponseSchema(BaseModel):
     role: str
     repo_link: Optional[str] = None
     joined_at: Optional[datetime] = None
+    user: UserResponseSchema
 
     class Config:
         from_attributes = True
