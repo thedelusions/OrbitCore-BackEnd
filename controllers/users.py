@@ -19,7 +19,7 @@ def create_user(user: UserSchema, db: Session = Depends(get_db)):
     new_user = UserModel(
         username=user.username,
         email=user.email,
-        role=user.role,
+        roles=user.roles,
         bio=user.bio,
         github_profile=user.github_profile
     )
@@ -61,8 +61,8 @@ def get_profile(current_user: UserModel = Depends(get_current_user)):
 
 @router.put("/profile", response_model=UserResponseSchema)
 def update_profile(update_data: UserUpdateSchema, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
-    if update_data.role is not None:
-        current_user.role = update_data.role
+    if update_data.roles is not None:
+        current_user.roles = update_data.roles
     if update_data.bio is not None:
         current_user.bio = update_data.bio
     if update_data.github_profile is not None:

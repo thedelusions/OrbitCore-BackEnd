@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, field_validator
+from typing import Optional, List
 from datetime import datetime
 from models.project import ProjectStatus
 
@@ -9,8 +9,17 @@ class ProjectSchema(BaseModel):
     description: str
     ownerId: int
     status: Optional[ProjectStatus] = ProjectStatus.OPEN
-    tags: Optional[str] = None
+    tags: List[str]
     repo_link: Optional[str] = None
+    
+    @field_validator('tags')
+    @classmethod
+    def validate_tags(cls, v):
+        if len(v) > 5:
+            raise ValueError('Maximum 5 tags allowed')
+        if len(v) == 0:
+            raise ValueError('At least 1 tag required')
+        return v
 
     class Config:
         from_attributes = True
@@ -22,7 +31,7 @@ class ProjectResponseSchema(BaseModel):
     description: str
     ownerId: int
     status: ProjectStatus
-    tags: Optional[str] = None
+    tags: List[str]
     repo_link: Optional[str] = None
     upvotes: int
     downvotes: int
@@ -37,8 +46,18 @@ class ProjectUpdateSchema(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     status: Optional[ProjectStatus] = None
-    tags: Optional[str] = None
+    tags: Optional[List[str]] = None
     repo_link: Optional[str] = None
+    
+    @field_validator('tags')
+    @classmethod
+    def validate_tags(cls, v):
+        if v is not None:
+            if len(v) > 5:
+                raise ValueError('Maximum 5 tags allowed')
+            if len(v) == 0:
+                raise ValueError('At least 1 tag required')
+        return v
 
     class Config:
         from_attributes = True
