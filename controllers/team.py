@@ -61,7 +61,7 @@ def get_team_comments(project_id: int, current_user: UserModel = Depends(get_cur
     # But since team is per user per project, comments are per team member?
     # Wait, the model has team_id, so comments per team entry.
     # To get all comments for the project's team, query comments where team.project_id == project_id
-    comments = db.query(CommentModel).join(TeamModel).filter(TeamModel.project_id == project_id).all()
+    comments = db.query(CommentModel).options(joinedload(CommentModel.user)).join(TeamModel).filter(TeamModel.project_id == project_id).all()
     return comments
 
 @router.post("/projects/{project_id}/team/comments", response_model=CommentResponseSchema)
@@ -85,4 +85,5 @@ def add_team_comment(project_id: int, comment: CommentSchema, current_user: User
     db.add(new_comment)
     db.commit()
     db.refresh(new_comment)
+    new_comment.user = current_user
     return new_comment
