@@ -50,7 +50,7 @@ def remove_team_member(project_id: int, user_id: int, current_user: UserModel = 
 
     db.delete(member)
     db.commit()
-    return {"message": "Team member removed"}
+    return {"message": "Team member have been kicked"}
 
 @router.get("/projects/{project_id}/team/comments", response_model=list[CommentResponseSchema])
 def get_team_comments(project_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -87,3 +87,18 @@ def add_team_comment(project_id: int, comment: CommentSchema, current_user: User
     db.refresh(new_comment)
     new_comment.user = current_user
     return new_comment
+
+
+@router.delete("/projects/{project_id}/team/comments/{comment_id}")
+def delete_comment(project_id: int,comment_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
+    comment = (db.query(CommentModel).join(TeamModel).filter(CommentModel.id == comment_id, TeamModel.project_id == project_id).first())
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
+    if comment.user_id != current_user.id and project.ownerId != current_user.id:
+        raise HTTPException(status_code=403, detail="Not allowed to delete this comment")
+    
+    db.delete(comment)
+    db.commit()
+    return {message: "comment deleted"}
