@@ -101,4 +101,4 @@ def delete_comment(project_id: int,comment_id: int, current_user: UserModel = De
     
     db.delete(comment)
     db.commit()
-    return {message: "comment deleted"}
+    return {"message": "comment deleted"}
