@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Enum, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Enum, DateTime, JSON
 from .base import Base
 from datetime import datetime, timezone, timedelta
 import enum
@@ -62,7 +62,7 @@ class ProjectModel(Base):
     description = Column(String, nullable=False)
     ownerId = Column(Integer, ForeignKey('users.id'), nullable=False)
     status = Column(Enum(ProjectStatus), nullable=False, default=ProjectStatus.OPEN)
-    tags = Column(String, nullable=False)
+    tags = Column(JSON, nullable=False, default=list)
     repo_link = Column(String, nullable=True)
     upvotes = Column(Integer, default=0, nullable=False)
     downvotes = Column(Integer, default=0, nullable=False)

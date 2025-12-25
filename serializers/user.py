@@ -1,12 +1,22 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+from typing import List
 
 class UserSchema(BaseModel):
     username: str  # User's unique name
     email: str  # User's email address
     password: str  # Plain text password for user registration (will be hashed before saving)
-    role: str  # User's tech role
+    roles: List[str]  # User's tech roles (max 3)
     bio: str  # User biography
     github_profile: str  # GitHub profile link
+    
+    @field_validator('roles')
+    @classmethod
+    def validate_roles(cls, v):
+        if len(v) > 3:
+            raise ValueError('Maximum 3 roles allowed')
+        if len(v) == 0:
+            raise ValueError('At least 1 role required')
+        return v
 
     class Config:
         from_attributes = True  # Enables compatibility with ORM models
@@ -16,7 +26,7 @@ class UserResponseSchema(BaseModel):
     id: int
     username: str
     email: str
-    role: str
+    roles: List[str]
     bio: str
     github_profile: str
 
@@ -36,9 +46,19 @@ class UserToken(BaseModel):
         from_attributes = True
 
 class UserUpdateSchema(BaseModel):
-    role: str = None
+    roles: List[str] = None
     bio: str = None
     github_profile: str = None
+    
+    @field_validator('roles')
+    @classmethod
+    def validate_roles(cls, v):
+        if v is not None:
+            if len(v) > 3:
+                raise ValueError('Maximum 3 roles allowed')
+            if len(v) == 0:
+                raise ValueError('At least 1 role required')
+        return v
 
     class Config:
         from_attributes = True
