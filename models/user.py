@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, JSON
+from sqlalchemy import Column, Integer, String, JSON, DateTime, text
 from sqlalchemy.orm import relationship
 from .base import Base
 from passlib.context import CryptContext
@@ -16,8 +16,8 @@ class UserModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, nullable=False, unique=True)
     email = Column(String, nullable=False, unique=True)
-    password_hash = Column(String, nullable=True)  # Add new field for storing the hashed password
-    roles = Column(JSON, nullable=False, default=list)  
+    password_hash = Column(String, nullable=False)  # Add new field for storing the hashed password
+    roles = Column(JSON, nullable=False, default=list, server_default=text("'[]'"))  
     bio = Column(String, nullable=True)
     github_profile = Column(String, nullable=True)
 
