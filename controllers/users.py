@@ -6,7 +6,7 @@ from database import get_db
 from dependencies.get_current_user import get_current_user
 router = APIRouter()
 
-@router.post("/register", response_model=UserResponseSchema)
+@router.post("/register", response_model=UserToken)
 def create_user(user: UserSchema, db: Session = Depends(get_db)):
     # Check if the username or email already exists
     existing_user = db.query(UserModel).filter(
@@ -30,7 +30,12 @@ def create_user(user: UserSchema, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
 
-    return new_user
+    token = new_user.generate_token()
+
+    return {
+        "token": token,
+        "message": "Registration successful"
+    }
 
 @router.post("/login", response_model=UserToken)
 def login(user: UserLogin, db: Session = Depends(get_db)):
@@ -45,8 +50,10 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     # Generate JWT token
     token = db_user.generate_token()
 
-    # Return token and a success message
-    return {"token": token, "message": "Login successful"}
+    return {
+        "token": token,
+        "message": "Login successful"
+    }
 
 @router.get("/users/{user_id}", response_model=UserResponseSchema)
 def get_user(user_id: int, db: Session = Depends(get_db)):
