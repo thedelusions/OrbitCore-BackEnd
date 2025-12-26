@@ -196,3 +196,8 @@ def delete_vote(project_id: int, user_id: int, db: Session = Depends(get_db)):
     db.refresh(project)
     
     return project
+
+@router.get("/users/me/projects", response_model=List[ProjectResponseSchema])
+def get_my_created_projects(current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
+    projects = db.query(ProjectModel).filter(ProjectModel.ownerId == current_user.id).all()
+    return projects
