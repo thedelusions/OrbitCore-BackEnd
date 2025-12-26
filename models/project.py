@@ -64,6 +64,8 @@ class ProjectModel(Base):
     status = Column(Enum(ProjectStatus), nullable=False, default=ProjectStatus.OPEN)
     tags = Column(JSON, nullable=False, default=list)
     repo_link = Column(String, nullable=True)
+    required_members = Column(Integer, nullable=True)
+    members_roles = Column(JSON, nullable=False, default=list)
     upvotes = Column(Integer, default=0, nullable=False)
     downvotes = Column(Integer, default=0, nullable=False)
     
