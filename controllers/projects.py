@@ -20,7 +20,9 @@ def create_project(project: ProjectSchema, current_user: UserModel = Depends(get
         ownerId=current_user.id,
         status=project.status,
         tags=project.tags,
-        repo_link=project.repo_link
+        repo_link=project.repo_link,
+        required_members=project.required_members,
+        members_roles=[role.model_dump() for role in project.members_roles]
     )
     
     db.add(new_project)
@@ -70,6 +72,10 @@ def update_project(project_id: int, project_update: ProjectUpdateSchema, current
         project.tags = project_update.tags
     if project_update.repo_link is not None:
         project.repo_link = project_update.repo_link
+    if project_update.required_members is not None:
+        project.required_members = project_update.required_members
+    if project_update.members_roles is not None:
+        project.members_roles = [role.model_dump() for role in project_update.members_roles]
     
     db.commit()
     db.refresh(project)

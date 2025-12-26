@@ -1,8 +1,12 @@
 from pydantic import BaseModel, field_validator
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import datetime
 from models.project import ProjectStatus
 
+
+class MemberRole(BaseModel):
+    role: str
+    count: int
 
 class ProjectSchema(BaseModel):
     title: str
@@ -11,6 +15,8 @@ class ProjectSchema(BaseModel):
     status: Optional[ProjectStatus] = ProjectStatus.OPEN
     tags: List[str]
     repo_link: Optional[str] = None
+    required_members: Optional[int] = None
+    members_roles: List[MemberRole] = []
     
     @field_validator('tags')
     @classmethod
@@ -33,6 +39,8 @@ class ProjectResponseSchema(BaseModel):
     status: ProjectStatus
     tags: List[str]
     repo_link: Optional[str] = None
+    required_members: Optional[int] = None
+    members_roles: List[MemberRole]
     upvotes: int
     downvotes: int
     createdAt: datetime
@@ -48,6 +56,8 @@ class ProjectUpdateSchema(BaseModel):
     status: Optional[ProjectStatus] = None
     tags: Optional[List[str]] = None
     repo_link: Optional[str] = None
+    required_members: Optional[int] = None
+    members_roles: Optional[List[MemberRole]] = None
     
     @field_validator('tags')
     @classmethod
