@@ -86,3 +86,24 @@ def add_team_comment(project_id: int, comment: CommentSchema, current_user: User
     db.commit()
     db.refresh(new_comment)
     return new_comment
+
+@router.delete("/projects/{project_id}/team/comments/{comment_id}")
+def delete_team_comment(project_id: int, comment_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not is_team_member(project_id, current_user.id, db):
+        raise HTTPException(status_code=403, detail="Only team members can delete comments")
+    
+    comment = db.query(CommentModel).filter(CommentModel.id == comment_id).first()
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    team = db.query(TeamModel).filter(TeamModel.id == comment.team_id).first()
+    if not team or team.project_id != project_id:
+        raise HTTPException(status_code=404, detail="Comment not found in this project")
+    
+    project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
+    if comment.user_id != current_user.id and project.ownerId != current_user.id:
+        raise HTTPException(status_code=403, detail="Only the comment author or project owner can delete this comment")
+    
+    db.delete(comment)
+    db.commit()
+    return {"message": "Comment deleted successfully"}
