@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from models.team import TeamModel
 from models.user import UserModel
 from models.project import ProjectModel
@@ -26,7 +26,7 @@ def is_team_member(project_id: int, user_id: int, db: Session):
 
 @router.get("/projects/{project_id}/team", response_model=list[TeamResponseSchema])
 def get_team_members(project_id: int, db: Session = Depends(get_db)):
-    team_members = db.query(TeamModel).filter(TeamModel.project_id == project_id).all()
+    team_members = db.query(TeamModel).options(joinedload(TeamModel.user)).filter(TeamModel.project_id == project_id).all()
     return team_members
 
 
@@ -50,7 +50,7 @@ def remove_team_member(project_id: int, user_id: int, current_user: UserModel = 
 
     db.delete(member)
     db.commit()
-    return {"message": "Team member removed"}
+    return {"message": "Team member have been kicked"}
 
 @router.get("/projects/{project_id}/team/comments", response_model=list[CommentResponseSchema])
 def get_team_comments(project_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -61,7 +61,7 @@ def get_team_comments(project_id: int, current_user: UserModel = Depends(get_cur
     # But since team is per user per project, comments are per team member?
     # Wait, the model has team_id, so comments per team entry.
     # To get all comments for the project's team, query comments where team.project_id == project_id
-    comments = db.query(CommentModel).join(TeamModel).filter(TeamModel.project_id == project_id).all()
+    comments = db.query(CommentModel).options(joinedload(CommentModel.user)).join(TeamModel).filter(TeamModel.project_id == project_id).all()
     return comments
 
 @router.post("/projects/{project_id}/team/comments", response_model=CommentResponseSchema)
@@ -85,8 +85,23 @@ def add_team_comment(project_id: int, comment: CommentSchema, current_user: User
     db.add(new_comment)
     db.commit()
     db.refresh(new_comment)
+    new_comment.user = current_user
     return new_comment
 
+
+@router.delete("/projects/{project_id}/team/comments/{comment_id}")
+def delete_comment(project_id: int,comment_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
+    comment = (db.query(CommentModel).join(TeamModel).filter(CommentModel.id == comment_id, TeamModel.project_id == project_id).first())
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
+    if comment.user_id != current_user.id and project.ownerId != current_user.id:
+        raise HTTPException(status_code=403, detail="Not allowed to delete this comment")
+    
+    db.delete(comment)
+    db.commit()
+    return {"message": "comment deleted"}
 @router.delete("/projects/{project_id}/team/comments/{comment_id}")
 def delete_team_comment(project_id: int, comment_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
     if not is_team_member(project_id, current_user.id, db):

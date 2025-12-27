@@ -27,7 +27,7 @@ class RequestResponseSchema(BaseModel):
     role: str
     status: str
     message: Optional[str] = None
-    created_at: datetime
+    createdAt: datetime
     updated_at: datetime
 
     class Config:
@@ -41,7 +41,7 @@ class RequestWithDetailsSchema(BaseModel):
     role: str
     status: str
     message: Optional[str] = None
-    created_at: datetime
+    createdAt: datetime
     updated_at: datetime
     user: UserResponseSchema
     project: ProjectResponseSchema

@@ -1,10 +1,10 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 from typing import List
 
 class UserSchema(BaseModel):
     username: str  # User's unique name
     email: str  # User's email address
-    password: str  # Plain text password for user registration (will be hashed before saving)
+    password: str = Field(min_length=8) # Plain text password for user registration (will be hashed before saving)
     roles: List[str]  # User's tech roles (max 3)
     bio: str  # User biography
     github_profile: str  # GitHub profile link
