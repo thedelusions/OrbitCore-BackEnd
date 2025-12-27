@@ -88,7 +88,6 @@ def add_team_comment(project_id: int, comment: CommentSchema, current_user: User
     new_comment.user = current_user
     return new_comment
 
-<<<<<<< HEAD
 
 @router.delete("/projects/{project_id}/team/comments/{comment_id}")
 def delete_comment(project_id: int,comment_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -103,7 +102,6 @@ def delete_comment(project_id: int,comment_id: int, current_user: UserModel = De
     db.delete(comment)
     db.commit()
     return {"message": "comment deleted"}
-=======
 @router.delete("/projects/{project_id}/team/comments/{comment_id}")
 def delete_team_comment(project_id: int, comment_id: int, current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)):
     if not is_team_member(project_id, current_user.id, db):
@@ -124,4 +122,3 @@ def delete_team_comment(project_id: int, comment_id: int, current_user: UserMode
     db.delete(comment)
     db.commit()
     return {"message": "Comment deleted successfully"}
->>>>>>> 48c759a262902cbf153a6330b8870fe3b5a0253a
